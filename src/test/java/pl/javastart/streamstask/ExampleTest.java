@@ -54,8 +54,8 @@ public class ExampleTest {
 
         //then
         Assert.assertEquals(3, women.size());
-        List<User> tab = List.of(new User(1L, "Alicja", 20), new User(3L, "Patrycja", 25)
-                , new User(7L, "Dominika", 27));
+        List<User> tab = List.of(new User(1L, "Alicja", 20), new User(3L, "Patrycja", 25),
+                new User(7L, "Dominika", 27));
         Assert.assertEquals(tab, women);
     }
 
