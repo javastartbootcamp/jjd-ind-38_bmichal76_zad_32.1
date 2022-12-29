@@ -45,7 +45,7 @@ public class StreamsTask {
     // metoda powinna zwracać średni wiek mężczyzn (sprawdzając, czy imię nie kończy się na "a")
     Double averageMenAge(Collection<User> users) {
         validateUserCollection(users);
-        return  users.stream()
+        return users.stream()
                 .filter(this::isMen)
                 .map(user -> (double) user.getAge())
                 .collect(Collectors.averagingDouble(value -> value));
@@ -69,11 +69,7 @@ public class StreamsTask {
     private boolean isWomen(User user) {
         if (user != null) {
             String name = user.getName();
-            char[] chars = name.toCharArray();
-            int size = chars.length;
-            if (size > 0) {
-                return chars[size - 1] == 'a';
-            }
+            return name.endsWith("a");
         }
         return false;
     }
@@ -95,8 +91,13 @@ public class StreamsTask {
     }
 
     private List<Expense> getExpensesForUser(User user, List<Expense> expense) {
-        return expense.stream()
-                .filter(exp -> exp.getUserId().equals(user.getId()))
-                .collect(Collectors.toList());
+        Map<Long, List<Expense>> exp = expense.stream().collect(Collectors.groupingBy(Expense::getUserId));
+        Long id = user.getId();
+        List<Expense> list = exp.get(id);
+        if (list == null) {
+            return new ArrayList<>();
+        } else {
+            return list;
+        }
     }
 }
