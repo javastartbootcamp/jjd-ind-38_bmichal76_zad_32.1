@@ -54,16 +54,18 @@ public class StreamsTask {
     // metoda powinna zwracać wydatki zgrupowane po ID użytkownika
     Map<Long, List<Expense>> groupExpensesByUserId(Collection<User> users, List<Expense> expenses) {
         validateCollections(users, expenses);
+        Map<Long, List<Expense>> exp = getGroupedExpenses(expenses);
         return users.stream()
-                .collect(Collectors.toMap(User::getId, user -> getExpensesForUser(user, expenses)));
+                .collect(Collectors.toMap(User::getId, user -> getExpensesForUser(user, exp)));
     }
 
     // metoda powinna zwracać wydatki zgrupowane po użytkowniku
     // podobne do poprzedniego, ale trochę trudniejsze
     Map<User, List<Expense>> groupExpensesByUser(Collection<User> users, List<Expense> expenses) {
         validateCollections(users, expenses);
+        Map<Long, List<Expense>> exp = getGroupedExpenses(expenses);
         return users.stream()
-                .collect(Collectors.toMap(user -> user, user -> getExpensesForUser(user, expenses)));
+                .collect(Collectors.toMap(user -> user, user -> getExpensesForUser(user, exp)));
     }
 
     private boolean isWomen(User user) {
@@ -90,14 +92,15 @@ public class StreamsTask {
         }
     }
 
-    private List<Expense> getExpensesForUser(User user, List<Expense> expense) {
-        Map<Long, List<Expense>> exp = expense.stream().collect(Collectors.groupingBy(Expense::getUserId));
+    private Map<Long, List<Expense>> getGroupedExpenses(List<Expense> expense) {
+        return expense.stream()
+                .collect(Collectors.groupingBy(Expense::getUserId));
+    }
+
+    private List<Expense> getExpensesForUser(User user, Map<Long, List<Expense>> exp) {
         Long id = user.getId();
         List<Expense> list = exp.get(id);
-        if (list == null) {
-            return new ArrayList<>();
-        } else {
-            return list;
-        }
+        return Objects.requireNonNullElseGet(list, ArrayList::new);
     }
+
 }
